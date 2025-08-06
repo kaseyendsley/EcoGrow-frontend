@@ -17,7 +17,7 @@ export default function HealthPage() {
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold">Backend Health</h1>
+      <h1 className="text-2xl font-bold">EcoGrow Backend Health</h1>
       <pre className="mt-4 bg-gray-100 p-4 rounded">
         {JSON.stringify(data, null, 2)}
       </pre>
