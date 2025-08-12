@@ -33,6 +33,9 @@ export default function NavBar() {
         <Link href="/" className="font-medium">EcoGrow</Link>
         <div className="flex items-center gap-4">
           <Link href="/" className="hover:underline">Home</Link>
+          <Link href="/quests" className="px-3 py-2 rounded-xl hover:bg-gray-100">
+  Quests
+</Link>
           <button
             onClick={onLogout}
             className="rounded-md border px-3 py-1 text-sm"
