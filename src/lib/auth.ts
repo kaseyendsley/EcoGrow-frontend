@@ -2,7 +2,7 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://127.0.0.1:8000";
 
 // ---- token storage (browser only) ----
-const TOKEN_KEY = "ecogrow_token";
+const TOKEN_KEY = "EG_TOKEN";
 export const saveToken = (token: string) => {
   if (typeof window !== "undefined") localStorage.setItem(TOKEN_KEY, token);
 };
