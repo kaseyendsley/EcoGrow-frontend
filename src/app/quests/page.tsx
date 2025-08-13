@@ -1,167 +1,3 @@
-// "use client";
-
-// import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-// import { API, Quest, QuestPatchBody,  QuestCreateBody, Category, Icon, Difficulty, Tag, getAuthToken } from "@/lib/api";
-// import { useState } from "react";
-
-// export default function QuestsPage() {
-//   const qc = useQueryClient();
-
-//   // fetch quests (public GET)
-//   const { data: quests, isLoading, error } = useQuery<Quest[]>({
-//     queryKey: ["quests"],
-//     queryFn: API.listQuests,
-//   });
-
-//   // fetch current user only if we have a token
-//   const hasToken = typeof window !== "undefined" && !!getAuthToken();
-//   const { data: me } = useQuery({
-//     queryKey: ["me"],
-//     queryFn: API.me,
-//     enabled: hasToken,
-//   });
-
-//   // mutations
-//   const deleteMut = useMutation({
-//     mutationFn: (id: number) => API.deleteQuest(id),
-//     onSuccess: () => qc.invalidateQueries({ queryKey: ["quests"] }),
-//   });
-
-//   const patchMut = useMutation({
-//     mutationFn: ({ id, body }: { id: number; body: Partial<QuestPatchBody> }) =>
-//       API.patchQuest(id, body),
-//     onSuccess: () => qc.invalidateQueries({ queryKey: ["quests"] }),
-//   });
-
-//   if (isLoading) return <div className="p-6">Loading quests…</div>;
-//   if (error) return <div className="p-6">Couldn’t load quests.</div>;
-
-//   return (
-//     <main className="p-6 space-y-4">
-//       <h1 className="text-2xl font-bold">EcoGrow Quests</h1>
-
-//       <ul className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-//         {quests?.map((q) => {
-//           const canEdit = !!me && me.id === q.created_by;
-//           return (
-//             <QuestCard
-//               key={q.id}
-//               q={q}
-//               canEdit={canEdit}
-//               onDelete={() => deleteMut.mutate(q.id)}
-//               onSave={(body) => patchMut.mutate({ id: q.id, body })}
-//               saving={patchMut.isPending}
-//               deleting={deleteMut.isPending}
-//             />
-//           );
-//         })}
-//       </ul>
-//     </main>
-//   );
-// }
-
-// function QuestCard({
-//   q,
-//   canEdit,
-//   onDelete,
-//   onSave,
-//   saving,
-//   deleting,
-// }: {
-//   q: Quest;
-//   canEdit: boolean;
-//   onDelete: () => void;
-//   onSave: (body: Partial<QuestPatchBody>) => void;
-//   saving: boolean;
-//   deleting: boolean;
-// }) {
-//   const [editing, setEditing] = useState(false);
-//   const [title, setTitle] = useState(q.title);
-//   const [description, setDescription] = useState(q.description || "");
-
-//   return (
-//     <li className="rounded-2xl shadow p-4 bg-white space-y-3">
-//       <div className="flex items-center gap-3">
-//         {/* eslint-disable-next-line @next/next/no-img-element */}
-//         {q.icon?.icon_url && <img src={q.icon.icon_url} alt={q.icon.name} className="h-8 w-8" />}
-//         <div>
-//           <h2 className="text-lg font-semibold">{q.title}</h2>
-//           <p className="text-sm text-gray-500">{q.category?.name} · {q.difficulty?.name}</p>
-//         </div>
-//       </div>
-
-//       {editing ? (
-//         <>
-//           <input
-//             className="w-full border rounded-xl px-3 py-2"
-//             value={title}
-//             onChange={(e) => setTitle(e.target.value)}
-//             placeholder="Title"
-//           />
-//           <textarea
-//             className="w-full border rounded-xl px-3 py-2"
-//             value={description}
-//             onChange={(e) => setDescription(e.target.value)}
-//             placeholder="Description"
-//             rows={3}
-//           />
-//           <div className="flex gap-2">
-//             <button
-//               className="px-3 py-1 rounded-xl bg-emerald-100"
-//               onClick={() => {
-//                 onSave({ title, description });
-//                 setEditing(false);
-//               }}
-//               disabled={saving}
-//             >
-//               {saving ? "Saving…" : "Save"}
-//             </button>
-//             <button
-//               className="px-3 py-1 rounded-xl bg-gray-100"
-//               onClick={() => {
-//                 setTitle(q.title);
-//                 setDescription(q.description || "");
-//                 setEditing(false);
-//               }}
-//             >
-//               Cancel
-//             </button>
-//           </div>
-//         </>
-//       ) : (
-//         <>
-//           <p className="text-sm text-gray-700">{q.description}</p>
-//           {!!q.tags?.length && (
-//             <div className="flex flex-wrap gap-2">
-//               {q.tags.map((t) => (
-//                 <span key={t.id} className="text-xs bg-gray-100 px-2 py-1 rounded-full">#{t.name}</span>
-//               ))}
-//             </div>
-//           )}
-//           {canEdit && (
-//             <div className="flex gap-2">
-//               <button
-//                 className="px-3 py-1 rounded-xl bg-gray-100"
-//                 onClick={() => setEditing(true)}
-//               >
-//                 Edit
-//               </button>
-//               <button
-//                 className="px-3 py-1 rounded-xl bg-red-100"
-//                 onClick={onDelete}
-//                 disabled={deleting}
-//               >
-//                 {deleting ? "Deleting…" : "Delete"}
-//               </button>
-//             </div>
-//           )}
-//         </>
-//       )}
-//     </li>
-//   );
-// }
-
-
 "use client";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -175,6 +11,10 @@ import {
   Difficulty,
   Tag,
   getAuthToken,
+  // new imports
+  listMyUserQuests,
+  adoptUserQuest,
+  UserQuest,
 } from "@/lib/api";
 import { useEffect, useMemo, useState } from "react";
 
@@ -187,14 +27,30 @@ export default function QuestsPage() {
     queryFn: API.listQuests,
   });
 
-  // fetch current user only if we have a token
+  // auth presence
   const [hasToken, setHasToken] = useState(false);
-  useEffect(() => { setHasToken(!!getAuthToken()); }, []);
+  useEffect(() => {
+    setHasToken(!!getAuthToken());
+  }, []);
+
+  // current user (only when logged in)
   const { data: me } = useQuery({
     queryKey: ["me"],
     queryFn: API.me,
     enabled: hasToken,
   });
+
+  // my active user_quests to prevent duplicate undertaking
+  const { data: myUserQuests = [] } = useQuery<UserQuest[]>({
+    queryKey: ["my-user-quests"],
+    queryFn: listMyUserQuests,
+    enabled: hasToken,
+  });
+
+  // set of quest IDs already in progress for me
+  const inProgressSet = useMemo(() => {
+    return new Set(myUserQuests.filter((u) => !u.completed).map((u) => u.quest.id));
+  }, [myUserQuests]);
 
   // dropdown data
   const { data: categories = [], isLoading: catLoading } = useQuery<Category[]>({
@@ -229,6 +85,21 @@ export default function QuestsPage() {
   const createMut = useMutation({
     mutationFn: (body: QuestCreateBody) => API.createQuest(body),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["quests"] }),
+  });
+
+  // NEW: undertake (adopt) mutation
+  const [adoptingId, setAdoptingId] = useState<number | null>(null);
+  const adoptMut = useMutation({
+    mutationFn: (questId: number) => adoptUserQuest(questId),
+    onMutate: (qid) => setAdoptingId(qid),
+    onError: (e: any) => {
+      alert(e?.message || "Could not undertake this quest.");
+    },
+    onSuccess: () => {
+      // refresh my-user-quests so /my-quests shows it immediately
+      qc.invalidateQueries({ queryKey: ["my-user-quests"] });
+    },
+    onSettled: () => setAdoptingId(null),
   });
 
   // modal state
@@ -273,6 +144,9 @@ export default function QuestsPage() {
       <ul className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {quests?.map((q) => {
           const canEdit = !!me && me.id === q.created_by;
+          const canUndertake = hasToken && !inProgressSet.has(q.id);
+          const undertaking = adoptingId === q.id;
+
           return (
             <QuestCard
               key={q.id}
@@ -282,6 +156,10 @@ export default function QuestsPage() {
               onSave={(body) => patchMut.mutate({ id: q.id, body })}
               saving={patchMut.isPending}
               deleting={deleteMut.isPending}
+              // new props
+              canUndertake={canUndertake}
+              undertaking={undertaking}
+              onUndertake={() => adoptMut.mutate(q.id)}
             />
           );
         })}
@@ -313,7 +191,9 @@ function CreateQuestModal({
 }) {
   useEffect(() => {
     if (!open) return;
-    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [open, onClose]);
@@ -537,6 +417,10 @@ function QuestCard({
   onSave,
   saving,
   deleting,
+  // new props
+  canUndertake,
+  undertaking,
+  onUndertake,
 }: {
   q: Quest;
   canEdit: boolean;
@@ -544,6 +428,10 @@ function QuestCard({
   onSave: (body: Partial<QuestPatchBody>) => void;
   saving: boolean;
   deleting: boolean;
+  // new props
+  canUndertake: boolean;
+  undertaking: boolean;
+  onUndertake: () => void;
 }) {
   const [editing, setEditing] = useState(false);
   const [title, setTitle] = useState(q.title);
@@ -617,23 +505,39 @@ function QuestCard({
               ))}
             </div>
           )}
-          {canEdit && (
-            <div className="flex gap-2">
+
+          <div className="flex gap-2">
+            {/* Undertake button (shown when logged in and not already in progress) */}
+            {canUndertake && (
               <button
-                className="px-3 py-1 rounded-xl bg-gray-100"
-                onClick={() => setEditing(true)}
+                className="px-3 py-1 rounded-xl bg-emerald-600 text-white"
+                onClick={onUndertake}
+                disabled={undertaking}
+                title="Add this quest to My Quests"
               >
-                Edit
+                {undertaking ? "Undertaking…" : "Undertake Quest"}
               </button>
-              <button
-                className="px-3 py-1 rounded-xl bg-red-100"
-                onClick={onDelete}
-                disabled={deleting}
-              >
-                {deleting ? "Deleting…" : "Delete"}
-              </button>
-            </div>
-          )}
+            )}
+
+            {/* Owner controls */}
+            {canEdit && (
+              <>
+                <button
+                  className="px-3 py-1 rounded-xl bg-gray-100"
+                  onClick={() => setEditing(true)}
+                >
+                  Edit
+                </button>
+                <button
+                  className="px-3 py-1 rounded-xl bg-red-100"
+                  onClick={onDelete}
+                  disabled={deleting}
+                >
+                  {deleting ? "Deleting…" : "Delete"}
+                </button>
+              </>
+            )}
+          </div>
         </>
       )}
     </li>
