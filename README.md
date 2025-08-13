@@ -2,7 +2,7 @@
 
 EcoGrow helps users build climate-conscious habits through sustainability quests. Users can create and undertake challenges across categories like food, transportation, and energy, share their progress with photos and reflections, and connect with users who share their values. Whether it’s reducing waste, trying eco-friendly swaps, or learning new green habits, EcoGrow makes sustainable living approachable and fun.
 
-The backend for EcoGrow, built with Python, Django, Django REST Framework, and Poetry, can be found here:[EcoGrow Backend Repository](https://github.com/kaseyendsley/EcoGrow-backend)
+The backend for EcoGrow, built with Python, Django, Django REST Framework, and Poetry, can be found here: [EcoGrow Backend Repository](https://github.com/kaseyendsley/EcoGrow-backend)
 
 ---
 
