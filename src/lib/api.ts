@@ -84,6 +84,45 @@ export type QuestCreateBody = {
   tag_ids?: number[]; // optional, up to 3 on the UI
 };
 
+// ===== UserQuest Types =====
+export type UserQuest = {
+  id: number;
+  quest: Quest;                         // nested quest comes back from the API
+  completed: boolean;
+  completed_at: string | null;          // ISO string or null
+  reflection: string;
+  photo_url: string;
+  rating: number | string | null;       // DRF may serialize Decimal as string
+};
+
+export type UserQuestCompleteBody = {
+  reflection: string;                   // required
+  rating: number;                       // 1–5 in 0.5 steps
+  photo_url?: string;                   // optional
+  completed_at?: string;                // optional ISO timestamp from client
+};
+
+// ===== UserQuest API (standalone exports) =====
+// (Using standalone exports so you don't have to re-open the API object)
+export const listMyUserQuests = () =>
+  fetchJSON<UserQuest[]>("/api/user-quests/");
+
+export const adoptUserQuest = (quest_id: number) =>
+  fetchJSON<UserQuest>("/api/user-quests/", {
+    method: "POST",
+    body: JSON.stringify({ quest_id }),
+  });
+
+export const completeUserQuest = (id: number, body: UserQuestCompleteBody) =>
+  fetchJSON<UserQuest>(`/api/user-quests/${id}/complete/`, {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
+
+export const deleteUserQuest = (id: number) =>
+  fetchJSON<void>(`/api/user-quests/${id}/`, { method: "DELETE" });
+
+
 // ===== API surface =====
 export const API = {
   me: () => fetchJSON<Me>("/api/auth/me/"),
