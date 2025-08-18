@@ -373,7 +373,7 @@ function CompleteModal({
             </div>
 
             <label className="block">
-              <span className="text-sm text-gray-600">Completed At (optional ISO)</span>
+              <span className="text-sm text-gray-600">Completed At</span>
               <input
                 className="w-full border rounded-xl px-3 py-2"
                 value={completedAt}
