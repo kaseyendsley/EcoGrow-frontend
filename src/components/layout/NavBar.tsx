@@ -32,9 +32,9 @@ export default function NavBar() {
       <div className="mx-auto max-w-4xl px-4 py-3 flex items-center justify-between">
         <Link href="/" className="font-medium">EcoGrow</Link>
         <div className="flex items-center gap-4">
-          <Link href="/" className="hover:underline">Home</Link>
-          <Link href="/quests" className="px-3 py-2 rounded-xl hover:bg-gray-100">Quests</Link>
+          <Link href="/quests" className="px-3 py-2 rounded-xl hover:bg-gray-100">All Quests</Link>
           <Link href="/my-quests" className="px-3 py-2 rounded-xl hover:bg-gray-100"> My Quests</Link>
+          <Link href="/my-quests" className="px-3 py-2 rounded-xl hover:bg-gray-100"> Profile</Link>
           <button
             onClick={onLogout}
             className="rounded-md border px-3 py-1 text-sm"
