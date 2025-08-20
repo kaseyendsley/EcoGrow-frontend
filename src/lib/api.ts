@@ -3,7 +3,7 @@ export const BACKEND_URL =
 
 const TOKEN_KEY = "EG_TOKEN";
 
-// ===== Auth Utilities =====
+// Auth Utilities
 export function getAuthToken(): string | null {
   if (typeof window === "undefined") return null;
   return localStorage.getItem(TOKEN_KEY);
@@ -49,7 +49,7 @@ async function fetchForm<T>(path: string, form: FormData, options?: RequestInit)
   return res.json();
 }
 
-// ===== Types =====
+// Types 
 export type Category = { id: number; name: string };
 export type Icon = { id: number; name: string; icon_url: string };
 export type Difficulty = { id: number; name: string };
@@ -83,7 +83,6 @@ export type Me = {
   email: string;
   profile_img?: string | null;
   date_joined?: string;
-  is_moderator?: boolean;
 };
 
 export type QuestCreateBody = {
@@ -103,7 +102,7 @@ export type UserQuest = {
   completed_at: string | null;
   reflection: string;
   rating: number | string | null;
-  photo?: string | null; // served URL from ImageField
+  photo?: string | null; 
 };
 
 export type UserQuestCompleteBody = {
@@ -124,14 +123,26 @@ export type UserProfileOwn = UserProfilePublic & {
   email: string;
 };
 
-// ===== API surface =====
+export type Subscription = {
+  id: number;
+  created_at: string; // ISO
+  target: { id: number; username: string };
+};
+
+// API surface 
 export const API = {
   // Auth & user
   me: () => fetchJSON<Me>("/api/auth/me/"),
 
-  // Profiles (backend exposes /api/users/)
+  // Profiles
   getUserProfile: (id: number) => fetchJSON<UserProfilePublic>(`/api/users/${id}/`),
   getMyProfile: () => fetchJSON<UserProfileOwn>("/api/users/me/"),
+
+  // Profile activity (NEW)
+  getUserCreatedQuests: (id: number) =>
+    fetchJSON<Quest[]>(`/api/users/${id}/created-quests/`),
+  getUserCompletedUserQuests: (id: number) =>
+    fetchJSON<UserQuest[]>(`/api/users/${id}/completed-user-quests/`),
 
   // Quests
   listQuests: () => fetchJSON<Quest[]>("/api/quests/"),
@@ -175,14 +186,29 @@ export const API = {
     if (payload.completed_at) form.append("completed_at", payload.completed_at);
     return fetchForm<UserQuest>(`/api/user-quests/${id}/complete/`, form);
   },
+
+    // Subscriptions
+  listSubscriptions: () => fetchJSON<Subscription[]>("/api/subscriptions/"),
+  createSubscription: (target_id: number) =>
+    fetchJSON<Subscription>("/api/subscriptions/", {
+      method: "POST",
+      body: JSON.stringify({ target_id }),
+    }),
+  deleteSubscription: (subscriptionId: number) =>
+    fetchJSON<void>(`/api/subscriptions/${subscriptionId}/`, {
+      method: "DELETE",
+    }),
+
 };
 
-// ====== Optionally, export API methods individually if needed ======
+// Optionally, export API methods individually if needed 
 export const {
   me,
   // profiles
   getUserProfile,
   getMyProfile,
+  getUserCreatedQuests,
+  getUserCompletedUserQuests,
   // quests
   listQuests,
   createQuest,
@@ -199,4 +225,8 @@ export const {
   completeUserQuest,
   deleteUserQuest,
   completeUserQuestUpload,
+  // subscriptions
+  listSubscriptions,
+  createSubscription,
+  deleteSubscription,
 } = API;
