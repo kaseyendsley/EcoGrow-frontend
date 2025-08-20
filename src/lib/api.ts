@@ -129,6 +129,31 @@ export type Subscription = {
   target: { id: number; username: string };
 };
 
+export type UserMini = {
+  id: number;
+  username: string;
+  profile_img: string | null;
+};
+
+export type FeedActivityItem =
+  | {
+      type: "quest_created";
+      ts: string;               // ISO
+      user: UserMini;
+      quest: Quest;             // reuse your Quest type
+    }
+  | {
+      type: "userquest_completed";
+      ts: string;               // ISO
+      user: UserMini;
+      user_quest: UserQuest;    // reuse your UserQuest type
+    };
+
+export type FeedResponse = {
+  results: FeedActivityItem[];
+  count: number;
+};
+
 // API surface 
 export const API = {
   // Auth & user
@@ -187,7 +212,7 @@ export const API = {
     return fetchForm<UserQuest>(`/api/user-quests/${id}/complete/`, form);
   },
 
-    // Subscriptions
+  // Subscriptions
   listSubscriptions: () => fetchJSON<Subscription[]>("/api/subscriptions/"),
   createSubscription: (target_id: number) =>
     fetchJSON<Subscription>("/api/subscriptions/", {
@@ -198,6 +223,21 @@ export const API = {
     fetchJSON<void>(`/api/subscriptions/${subscriptionId}/`, {
       method: "DELETE",
     }),
+
+    // Feed
+  listFeed: ({
+    scope,
+    limit = 20,
+    offset = 0,
+  }: {
+    scope: "all" | "subscribed";
+    limit?: number;
+    offset?: number;
+  }) =>
+    fetchJSON<FeedResponse>(
+      `/api/feed/?scope=${encodeURIComponent(scope)}&limit=${limit}&offset=${offset}`
+    ),
+
 
 };
 
@@ -229,4 +269,6 @@ export const {
   listSubscriptions,
   createSubscription,
   deleteSubscription,
+    // feed
+    listFeed,
 } = API;

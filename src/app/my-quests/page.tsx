@@ -385,7 +385,7 @@ function CompletedList({
   if (!items.length) {
     return (
       <div className="rounded-2xl border p-6 text-sm text-gray-600 bg-white">
-        No completed quests yet.
+        No user quests completed yet.
       </div>
     );
   }
